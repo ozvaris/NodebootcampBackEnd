@@ -5,9 +5,9 @@
   "main": "app.js",
   "engines": {
     "node": ">=14.16.0"
-},
+  },
   "scripts": {
-    "start:dev": "nodemon server.js",
+    "start": "nodemon server.js",
     "start:prod": "cross-env NODE_ENV=production  nodemon server.js"
   },
   "author": "",
@@ -16,6 +16,7 @@
     "cross-env": "^7.0.3",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
+    "mongoose": "^5.13.2",
     "morgan": "^1.10.0",
     "nodemon": "^2.0.10"
   },
