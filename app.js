@@ -16,6 +16,7 @@ app.use(express.static(`${__dirname}/public`));
 
 app.use((req, resp, next) => {
   req.requestTime = new Date().toISOString();
+  console.log('token :', req.headers.authorization);
   next();
 });
 

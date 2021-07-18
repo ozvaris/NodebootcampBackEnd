@@ -102,7 +102,7 @@ tourSchema.pre(/^find/, function (next) {
 });
 
 tourSchema.post(/^find/, function (doc, next) {
-  console.log(`Query took ${Date.now() - this.start} miliseconds`);
+  console.log(`Tour Query took ${Date.now() - this.start} miliseconds`);
   next();
 });
 

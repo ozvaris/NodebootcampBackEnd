@@ -90,6 +90,7 @@ exports.updateTour = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteTour = catchAsync(async (req, res, next) => {
+  //console.log('delete Tour id : ', req.params.id);
   const tour = await Tour.findByIdAndDelete(req.params.id);
 
   if (!tour) {
@@ -98,9 +99,7 @@ exports.deleteTour = catchAsync(async (req, res, next) => {
 
   res.status(204).json({
     status: 'success',
-    data: {
-      tour,
-    },
+    data: null,
   });
 });
 
@@ -190,3 +189,7 @@ exports.getMonthlyPlan = async (req, res) => {
     });
   }
 };
+
+exports.forgotPasswrod = ( req, res, next ) => {}
+
+exports.resetPasswrod = ( req, res, next ) => {}

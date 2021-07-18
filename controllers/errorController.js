@@ -1,5 +1,19 @@
 const AppError = require('../utils/appError');
 
+const handleTokenExpiredErrorDB = (err) => {
+  const message = `Your token Expired. Please log in again`;
+  return new AppError(message, 400);
+};
+
+const handleJWTSignatureError = (err) => {
+  const message = `Can't verify the token.`;
+  return new AppError(message, 400);
+};
+const handleJWTError = (err) => {
+  const message = `Invalid token. Please log in again!`;
+  return new AppError(message, 400);
+};
+
 const handleCastErrorDB = (err) => {
   const message = `Invalid ${err.path}: ${err.value}.`;
   return new AppError(message, 400);
@@ -7,7 +21,7 @@ const handleCastErrorDB = (err) => {
 
 const handleDuplicateFieldsDB = (err) => {
   const value = err.message.match(/(["'])(\\?.)*?\1/)[0];
-  console.log(value);
+  //console.log(value);
 
   const message = `Duplicate field value: ${value}. Please use another value!`;
   return new AppError(message, 400);
@@ -67,7 +81,15 @@ module.exports = (err, req, res, next) => {
     if (error.code === 11000) error = handleDuplicateFieldsDB(error);
     if (error.name === 'ValidationError')
       error = handleValidationErrorDB(error);
-
+    if (error.name === 'JsonWebTokenError') {
+      if (error.message === 'invalid signature') {
+        error = handleJWTSignatureError(error);
+      } else {
+        error = handleJWTError(error);
+      }
+    }
+    if (error.name === 'TokenExpiredError')
+      error = handleTokenExpiredErrorDB(error);
     sendErrorProd(error, res);
   }
 };
