@@ -52,6 +52,7 @@ const userSchema = new mongoose.Schema(
       type: Date,
       required: [false],
       default: Date.now(),
+      select: true,
     },
     passwordResetToken: {
       type: String,
@@ -61,12 +62,23 @@ const userSchema = new mongoose.Schema(
       type: Date,
       select: false,
     },
+    active: {
+      type: Boolean,
+      default: true,
+      select: false,
+    },
   },
   {
     toJSON: { virtuals: true },
     toObjects: { virtuals: true },
   }
 );
+
+userSchema.pre(/^find/, function (next) {
+  // this points to the current query
+  this.find({ active: { $ne: false } });
+  next();
+});
 
 userSchema.pre('save', async function (next) {
   // Only run this function if password was actually modified
