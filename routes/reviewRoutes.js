@@ -6,10 +6,15 @@ const router = express.Router({ mergeParams: true });
 
 router
   .route('/')
-  .get(authController.protect, reviewController.getAllReviews)
+  .get(
+    authController.protect,
+    reviewController.getTourId,
+    reviewController.getAllReviews
+  )
   .post(
     authController.protect,
     authController.restrictTo('admin', 'user'),
+    reviewController.setTourUserIds,
     reviewController.createReview
   );
 
