@@ -189,7 +189,3 @@ exports.getMonthlyPlan = async (req, res) => {
     });
   }
 };
-
-exports.forgotPasswrod = ( req, res, next ) => {}
-
-exports.resetPasswrod = ( req, res, next ) => {}
