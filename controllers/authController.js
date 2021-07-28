@@ -3,9 +3,8 @@ const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
-const APIFeatures = require('../utils/apiFeatures');
 const AppError = require('../utils/appError');
-const sendEmail = require('../utils/email');
+const Email = require('../utils/email');
 
 const signToken = (id) =>
   jwt.sign({ id: id }, process.env.JWT_SECRET, {
@@ -41,7 +40,10 @@ const createSendToken = (user, statusCode, res) => {
 exports.signup = catchAsync(async (req, res, next) => {
   const newUser = await User.create(req.body);
 
-  createSendToken(newUser, 200, res);
+  const url = `${req.protocol}://${req.get('host')}/me`;
+  await new Email(newUser, url).sendWelcome();
+
+  createSendToken(newUser, 201, res);
 });
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -121,35 +123,27 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   const resetToken = user.createPasswordResetToken();
   await user.save({ validateBeforeSave: false });
   // 3) Send it to user's email
-  const resetURL = `${req.protocol}://${req.get(
-    'host'
-  )}/api/ve/users/resetPassword/${resetToken}`;
 
-  const message = `Forgot your password? Submit a PATCH request with your new password and 
-  passwordConfirm to: ${resetURL}.\nIf you didn't forget your password, please ignore this 
-  email`;
+  try {
+    const resetURL = `${req.protocol}://${req.get(
+      'host'
+    )}/api/v1/users/resetPassword/${resetToken}`;
+    await new Email(user, resetURL).sendPasswordReset();
 
-  // try {
-  //   await sendEmail({
-  //     email: user.email,
-  //     subject: 'Your password reset token (valid for 10 min)',
-  //     message,
-  //   });
-  // } catch (err) {
-  //   user.passwordResetToken = undefined;
-  //   user.passwordResetExpire = undefined;
-  //   await user.save({ validateBeforeSave: false });
+    res.status(200).json({
+      status: 'success',
+      message: 'Token sent to email!',
+    });
+  } catch (err) {
+    user.passwordResetToken = undefined;
+    user.passwordResetExpire = undefined;
+    await user.save({ validateBeforeSave: false });
 
-  //   return next(
-  //     new AppError('There was an error sending the email. Try again later!'),
-  //     500
-  //   );
-  // }
-
-  res.status(200).json({
-    status: 'success',
-    message: 'Token sent to email!',
-  });
+    return next(
+      new AppError('There was an error sending the email. Try again later!'),
+      500
+    );
+  }
 });
 
 exports.resetPassword = catchAsync(async (req, res, next) => {
