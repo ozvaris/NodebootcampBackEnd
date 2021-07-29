@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "engines": {
-    "node": ">=14.16.0"
+    "node": "^14"
   },
   "scripts": {
     "start": "node server.js",
@@ -20,6 +20,7 @@
     "bcrypt": "^5.0.1",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
     "cross-env": "^7.0.3",
     "crypto": "^1.0.1",
     "dotenv": "^10.0.0",
