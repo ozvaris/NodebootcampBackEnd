@@ -58,13 +58,14 @@ const limiter = rateLimit({
   message: 'Too many requests from this IP, please try again in an hour!',
 });
 // Stripe webhook, BEFORE body-parser, because stripe needs the body as stream
+
+app.use('/api', limiter);
+
 app.post(
   '/webhook-checkout',
   express.raw({ type: 'application/json' }),
   bookingController.webhookCheckout
 );
-
-app.use('/api', limiter);
 
 // Body parser, reading data from body into req.body
 app.use(express.json({ limit: '10kb' }));
