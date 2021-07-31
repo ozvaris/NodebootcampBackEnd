@@ -86,7 +86,7 @@ app.use(
           'https://*.cloudflare.com/',
           'https://bundle.js:*',
           'ws://127.0.0.1:*/',
- 
+          'wss://natours-ozgur.herokuapp.com:*/',
         ],
         upgradeInsecureRequests: [],
       },
